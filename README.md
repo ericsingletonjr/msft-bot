@@ -3,7 +3,7 @@
 This repository contains a few examples of creating bots using the Microsoft Bot Services. The following are available:
 
 ### Implemented in C#
-1. [QuickStart Example](/EchoBot/README.md)
+1. [QuickStart Example](/EchoBot/EchoBot/)
 2. Self Implemented Version
 3. Implemented Bot with an Integrated Service
 
