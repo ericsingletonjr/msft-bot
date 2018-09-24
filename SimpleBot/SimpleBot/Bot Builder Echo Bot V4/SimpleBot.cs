@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Bot_Builder_Echo_Bot_V4.Dialogs;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
@@ -19,11 +20,14 @@ namespace Bot_Builder_Echo_Bot_V4
     {
         private readonly IStatePropertyAccessor<BasicState> _basicStateAccessor;
         private readonly IStatePropertyAccessor<DialogState> _dialogStateAccessor;
+        private readonly IEmailSender _emailSender;
         private readonly UserState _userState;
         private readonly ConversationState _conversationState;
 
-        public SimpleBot(UserState userState, ConversationState conversationState)
+        public SimpleBot(UserState userState, ConversationState conversationState, IEmailSender emailSender)
         {
+            _emailSender = emailSender;
+
             _userState = userState ?? throw new ArgumentNullException(nameof(userState));
             _conversationState = conversationState ?? throw new ArgumentNullException(nameof(conversationState));
 
@@ -31,7 +35,7 @@ namespace Bot_Builder_Echo_Bot_V4
             _dialogStateAccessor = _conversationState.CreateProperty<DialogState>(nameof(DialogState));
 
             Dialogs = new DialogSet(_dialogStateAccessor);
-            Dialogs.Add(new BasicDialogs(_basicStateAccessor));
+            Dialogs.Add(new BasicDialogs(_basicStateAccessor, _emailSender));
         }
 
         public DialogSet Dialogs { get; set; }

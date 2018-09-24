@@ -3,8 +3,10 @@
 
 using System;
 using System.Linq;
+using Bot_Builder_Echo_Bot_V4.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Integration;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
@@ -95,6 +97,8 @@ namespace Bot_Builder_Echo_Bot_V4
                     await context.SendActivityAsync("Sorry, it looks like something went wrong.");
                 };
             });
+
+            services.AddScoped<IEmailSender, EmailSender>();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
