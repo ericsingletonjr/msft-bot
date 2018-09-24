@@ -1,4 +1,4 @@
-﻿# EchoBot hosted in ASP.NET Core
+﻿# EchoBot Tutorial
 
 This was made following the C# quick start guide which can be found
 [here](https://docs.microsoft.com/en-us/azure/bot-service/dotnet/bot-builder-dotnet-sdk-quickstart?view=azure-bot-service-4.0).
