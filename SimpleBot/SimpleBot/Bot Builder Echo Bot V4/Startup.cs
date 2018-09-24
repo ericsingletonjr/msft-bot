@@ -62,10 +62,9 @@ namespace Bot_Builder_Echo_Bot_V4
         {
             // Loads .bot configuration file and adds a singleton that your Bot can access through dependency injection.
             var botConfig = BotConfiguration.Load(Configuration["botFilePath"] ?? @".\BotConfiguration.bot", Configuration["botFileSecret"]);
-            //botConfig.Services.Add(new ConnectedService(Configuration["MicrosoftAppId"]));
-            //botConfig.Services.Add(new ConnectedService(Configuration["MicrosoftAppPassword"]));
 
-
+            // botConfig.Services.Add(new ConnectedService(Configuration["MicrosoftAppId"]));
+            // botConfig.Services.Add(new ConnectedService(Configuration["MicrosoftAppPassword"]));
             services.AddSingleton(sp => botConfig ?? throw new InvalidOperationException($"The .bot config file could not be loaded. ({botConfig})"));
 
             // Retrieve current endpoint.
