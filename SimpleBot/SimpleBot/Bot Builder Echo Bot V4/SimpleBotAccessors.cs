@@ -21,6 +21,5 @@ namespace Bot_Builder_Echo_Bot_V4
         }
 
         public ConversationState ConversationState { get; }
-
     }
 }
