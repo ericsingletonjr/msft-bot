@@ -1,8 +1,8 @@
-﻿using Microsoft.Bot.Builder;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder;
 
 namespace Bot_Builder_Echo_Bot_V4
 {

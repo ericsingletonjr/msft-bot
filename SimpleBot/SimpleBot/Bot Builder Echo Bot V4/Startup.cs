@@ -57,20 +57,32 @@ namespace Bot_Builder_Echo_Bot_V4
         /// <seealso cref="https://docs.microsoft.com/en-us/azure/bot-service/bot-service-manage-channels?view=azure-bot-service-4.0"/>
         public void ConfigureServices(IServiceCollection services)
         {
+            // Loads .bot configuration file and adds a singleton that your Bot can access through dependency injection.
+            var botConfig = BotConfiguration.Load(Configuration["botFilePath"] ?? @".\BotConfiguration.bot", Configuration["botFileSecret"]);
+            services.AddSingleton(sp => botConfig ?? throw new InvalidOperationException($"The .bot config file could not be loaded. ({botConfig})"));
+
+            // Retrieve current endpoint.
+            var environment = _isProduction ? "production" : "development";
+            var service = botConfig.Services.Where(s => s.Type == "endpoint" && s.Name == environment).FirstOrDefault();
+            if (!(service is EndpointService endpointService))
+            {
+                throw new InvalidOperationException($"The .bot file does not contain an endpoint with name '{environment}'.");
+            }
+
+            // The Memory Storage used here is for local bot debugging only. When the bot
+            // is restarted, everything stored in memory will be gone.
+            IStorage dataStore = new MemoryStorage();
+
+            // Create Conversation State object.
+            // The Conversation State object is where we persist anything at the conversation-scope.
+            var conversationState = new ConversationState(dataStore);
+            services.AddSingleton(conversationState);
+
+            var userState = new UserState(dataStore);
+            services.AddSingleton(userState);
+
             services.AddBot<SimpleBot>(options =>
             {
-                // Loads .bot configuration file and adds a singleton that your Bot can access through dependency injection.
-                var botConfig = BotConfiguration.Load(Configuration["botFilePath"] ?? @".\BotConfiguration.bot", Configuration["botFileSecret"]);
-                services.AddSingleton(sp => botConfig ?? throw new InvalidOperationException($"The .bot config file could not be loaded. ({botConfig})"));
-
-                // Retrieve current endpoint.
-                var environment = _isProduction ? "production" : "development";
-                var service = botConfig.Services.Where(s => s.Type == "endpoint" && s.Name == environment).FirstOrDefault();
-                if (!(service is EndpointService endpointService))
-                {
-                    throw new InvalidOperationException($"The .bot file does not contain an endpoint with name '{environment}'.");
-                }
-
                 options.CredentialProvider = new SimpleCredentialProvider(endpointService.AppId, endpointService.AppPassword);
 
                 // Creates a logger for the application to use.
@@ -82,39 +94,6 @@ namespace Bot_Builder_Echo_Bot_V4
                     logger.LogError($"Exception caught : {exception}");
                     await context.SendActivityAsync("Sorry, it looks like something went wrong.");
                 };
-
-                // The Memory Storage used here is for local bot debugging only. When the bot
-                // is restarted, everything stored in memory will be gone.
-                IStorage dataStore = new MemoryStorage();
-
-                // Create Conversation State object.
-                // The Conversation State object is where we persist anything at the conversation-scope.
-                var conversationState = new ConversationState(dataStore);
-
-                options.State.Add(conversationState);
-            });
-
-            // Create and register state accesssors.
-            // Acessors created here are passed into the IBot-derived class on every turn.
-            services.AddSingleton<SimpleBotAccessors>(sp =>
-            {
-                var options = sp.GetRequiredService<IOptions<BotFrameworkOptions>>().Value;
-                if (options == null)
-                {
-                    throw new InvalidOperationException("BotFrameworkOptions must be configured prior to setting up the state accessors");
-                }
-
-                var conversationState = options.State.OfType<ConversationState>().FirstOrDefault();
-                if (conversationState == null)
-                {
-                    throw new InvalidOperationException("ConversationState must be defined and added before adding conversation-scoped state accessors.");
-                }
-
-                // Create the custom state accessor.
-                // State accessors enable other components to read and write individual properties of state.
-                var accessors = new SimpleBotAccessors(conversationState);
-
-                return accessors;
             });
         }
 

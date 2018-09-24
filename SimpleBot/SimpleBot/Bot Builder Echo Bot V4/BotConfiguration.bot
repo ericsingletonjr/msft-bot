@@ -1,5 +1,5 @@
 ﻿{
-  "name": "Bot_Builder_Echo_Bot_V4",
+  "name": "A Simple Bot",
   "services": [
     {
       "type": "endpoint",

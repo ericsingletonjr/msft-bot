@@ -209,14 +209,12 @@ namespace Bot_Builder_Basic_Bot_V4
             }
         }
 
-        // Helper function to greet user with information in GreetingState.
         private async Task<DialogTurnResult> GreetUser(WaterfallStepContext stepContext)
         {
             var context = stepContext.Context;
-            var greetingState = await UserProfileAccessor.GetAsync(context);
+            var basicState = await UserProfileAccessor.GetAsync(context);
 
-            // Display their profile information and end dialog.
-            await context.SendActivityAsync($"Hi {greetingState.Name}, from {greetingState.City}, nice to meet you!");
+            await context.SendActivityAsync($"Thanks! I've sent you a nifty email!");
             return await stepContext.EndDialogAsync();
         }
     }
